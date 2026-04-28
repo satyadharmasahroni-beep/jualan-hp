@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMK 9 Shop | Glass Edition V3 Pro</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --accent: #00d2ff;
+            --apple-bg: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: '-apple-system', BlinkMacSystemFont, sans-serif; }
+
+        body {
+            background: var(--apple-bg);
+            background-attachment: fixed;
+            color: white;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* --- HEADER DENGAN LOGO DI KIRI --- */
+        header {
+            padding: 20px 5%;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0; /* Mencegah logo gepeng */
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .header-text h1 {
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .header-text p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* --- LAYOUT UTAMA --- */
+        .container { width: 95%; max-width: 1200px; margin: 30px auto; }
+
+        .filter-section {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filter-section input {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            padding: 10px 15px;
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            width: 180px;
+        }
+
+        /* --- PRODUCT GRID & CARDS --- */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.18);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .card img { 
+            width: 100%; 
+            height: 200px; 
+            object-fit: contain; 
+            margin-bottom: 15px;
+        }
+
+        .card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+        .card .price-tag { font-size: 1.2rem; color: var(--accent); font-weight: 800; margin-bottom: 15px; }
+
+        /* --- FLOATING CART --- */
+        #floating-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 210, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--accent);
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,210,255,0.3);
+            transition: 0.3s;
+        }
+
+        #floating-cart:hover { transform: scale(1.05); background: rgba(0, 210, 255, 0.4); }
+
+        /* --- MODALS --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(25, 25, 25, 0.9);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .spec-table {
+            text-align: left;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .spec-row {
+            display: flex;
+            padding: 10px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.85rem;
+        }
+
+        .spec-label { width: 35%; color: var(--accent); font-weight: bold; }
+        .spec-value { width: 65%; color: #fff; }
+
+        button {
+            background: white;
+            color: #111;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        button:hover { background: var(--accent); color: white; }
+
+        .btn-delete {
+            background: rgba(255, 50, 50, 0.2);
+            color: #ff5555;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container">
+        <img src="smk.jpg" alt="Logo" onerror="this.src='https://via.placeholder.com/60?text=9'">
+    </div>
+    <div class="header-text">
+        <h1>SMK 9 SHOP</h1>
+        <p>Premium Gadget Store - 2026 Official Catalog</p>
+    </div>
+</header>
+
+<div class="container">
+    <div class="filter-section">
+        <span>Range Harga:</span>
+        <input type="number" id="minPrice" placeholder="Min (Rp)" oninput="filterData()">
+        <input type="number" id="maxPrice" placeholder="Max (Rp)" oninput="filterData()">
+        <button onclick="resetFilter()" style="width: auto; padding: 10px 20px;">Reset</button>
+    </div>
+
+    <div class="product-grid" id="product-list"></div>
+</div>
+
+<div id="floating-cart" onclick="showCart()">
+    <span>🛒</span>
+    <span id="cart-text">0 Item | Rp 0</span>
+</div>
+
+<div id="modal-detail" class="modal">
+    <div class="modal-content">
+        <div id="detail-content"></div>
+        <button onclick="closeModal('modal-detail')" style="background: transparent; color: white; border: 1px solid var(--glass-border); margin-top: 15px;">Kembali</button>
+    </div>
+</div>
+
+<div id="modal-cart" class="modal">
+    <div class="modal-content">
+        <h2>Keranjang Belanja</h2>
+        <div id="cart-items-list" style="margin: 20px 0; text-align: left;"></div>
+        <h3 id="cart-total-price" style="margin-bottom: 20px; color: var(--accent);"></h3>
+        <button onclick="sendWA()" style="background: #25D366; color: white; margin-bottom: 10px;">Checkout via WhatsApp</button>
+        <button onclick="closeModal('modal-cart')" style="background: transparent; color: white; border: 1px solid var(--glass-border);">Lanjut Belanja</button>
+    </div>
+</div>
+
+<script>
+    const products = [
+        { 
+            id: 1, name: "iPhone 15 Pro", price: 22499000, img: "1.jpg", 
+            specs: {
+                display: "6.7\" LTPO Super Retina XDR OLED",
+                chipset: "Apple A17 Pro (3 nm)",
+                memory: "256GB, 8GB RAM",
+                camera: "48MP Main Camera",
+                battery: "4441 mAh, 25W Wired"
+            }
+        },
+        { 
+            id: 2, name: "Samsung Galaxy S24 Ultra", price: 20999000, img: "5.jpg", 
+            specs: {
+                display: "6.8\" Dynamic LTPO AMOLED 2X",
+                chipset: "Snapdragon 8 Gen 3",
+                memory: "512GB, 12GB RAM",
+                camera: "200MP Quad Camera",
+                battery: "5000 mAh, 45W Wired"
+            }
+        },
+        { 
+            id: 3, name: "Google Pixel 8 Pro", price: 16200000, img: "6.jpg", 
+            specs: {
+                display: "6.7\" LTPO OLED, 120Hz",
+                chipset: "Google Tensor G3",
+                memory: "128GB, 12GB RAM",
+                camera: "50MP Triple Camera",
+                battery: "5050 mAh"
+            }
+        },
+        { 
+            id: 4, name: "Xiaomi 14 Ultra", price: 18999000, img: "7.jpg", 
+            specs: {
+                display: "6.73\" LTPO AMOLED",
+                chipset: "Snapdragon 8 Gen 3",
+                memory: "512GB, 16GB RAM",
+                camera: "50MP Quad Leica",
+                battery: "5000 mAh, 90W Wired"
+            }
+        },
+        { 
+            id: 5, name: "ROG Phone 8 Pro", price: 19999000, img: "8.jpg", 
+            specs: {
+                display: "6.78\" AMOLED, 165Hz",
+                chipset: "Snapdragon 8 Gen 3",
+                memory: "1TB, 24GB RAM",
+                camera: "50MP Main Camera",
+                battery: "5500 mAh, 65W Wired"
+            }
+        }
+    ];
+
+    let cart = [];
+
+    function render(data) {
+        const grid = document.getElementById('product-list');
+        grid.innerHTML = data.map(p => `
+            <div class="card" onclick="openDetail(${p.id})">
+                <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200?text=Gadget'">
+                <div>
+                    <h3>${p.name}</h3>
+                    <p class="price-tag">Rp ${p.price.toLocaleString('id-ID')}</p>
+                </div>
+                <button style="font-size: 0.8rem; padding: 10px;">Lihat Detail</button>
+            </div>
+        `).join('');
+    }
+
+    function filterData() {
+        const min = parseInt(document.getElementById('minPrice').value) || 0;
+        const max = parseInt(document.getElementById('maxPrice').value) || Infinity;
+        const filtered = products.filter(p => p.price >= min && p.price <= max);
+        render(filtered);
+    }
+
+    function resetFilter() {
+        document.getElementById('minPrice').value = "";
+        document.getElementById('maxPrice').value = "";
+        render(products);
+    }
+
+    function openDetail(id) {
+        const p = products.find(i => i.id === id);
+        document.getElementById('detail-content').innerHTML = `
+            <img src="${p.img}" style="width: 150px; margin-bottom: 15px;" onerror="this.src='https://via.placeholder.com/200?text=Gadget'">
+            <h2>${p.name}</h2>
+            <div class="spec-table">
+                <div class="spec-row"><div class="spec-label">Layar</div><div class="spec-value">${p.specs.display}</div></div>
+                <div class="spec-row"><div class="spec-label">CPU</div><div class="spec-value">${p.specs.chipset}</div></div>
+                <div class="spec-row"><div class="spec-label">Memori</div><div class="spec-value">${p.specs.memory}</div></div>
+                <div class="spec-row"><div class="spec-label">Kamera</div><div class="spec-value">${p.specs.camera}</div></div>
+                <div class="spec-row"><div class="spec-label">Baterai</div><div class="spec-value">${p.specs.battery}</div></div>
+            </div>
+            <p style="color: var(--accent); font-size: 1.5rem; font-weight: 800; margin-bottom: 20px;">
+                Rp ${p.price.toLocaleString('id-ID')}
+            </p>
+            <button onclick="addToCart(${p.id})">Tambah ke Keranjang</button>
+        `;
+        document.getElementById('modal-detail').style.display = 'flex';
+    }
+
+    function addToCart(id) {
+        const item = products.find(p => p.id === id);
+        cart.push({...item, cartId: Date.now()});
+        updateFloating();
+        closeModal('modal-detail');
+    }
+
+    function removeFromCart(cartId) {
+        cart = cart.filter(item => item.cartId !== cartId);
+        updateFloating();
+        showCart();
+    }
+
+    function updateFloating() {
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('cart-text').innerText = `${cart.length} Item | Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    function showCart() {
+        const list = document.getElementById('cart-items-list');
+        if(cart.length === 0) {
+            list.innerHTML = "<p style='text-align:center;'>Keranjang kosong.</p>";
+        } else {
+            list.innerHTML = cart.map(i => `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.1)">
+                    <div>
+                        <div style="font-weight:bold; font-size: 0.9rem;">${i.name}</div>
+                        <div style="color: var(--accent); font-size: 0.8rem;">Rp ${i.price.toLocaleString('id-ID')}</div>
+                    </div>
+                    <button class="btn-delete" onclick="removeFromCart(${i.cartId})">Hapus</button>
+                </div>
+            `).join('');
+        }
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        document.getElementById('cart-total-price').innerText = `Total: Rp ${total.toLocaleString('id-ID')}`;
+        document.getElementById('modal-cart').style.display = 'flex';
+    }
+
+    function sendWA() {
+        if(cart.length === 0) return alert("Keranjang kosong!");
+        let text = "*ORDER SMK 9 SHOP*\n\n";
+        cart.forEach((i, idx) => text += `${idx+1}. ${i.name} - Rp ${i.price.toLocaleString('id-ID')}\n`);
+        const total = cart.reduce((s, i) => s + i.price, 0);
+        text += `\n*TOTAL: Rp ${total.toLocaleString('id-ID')}*`;
+        window.open(`https://wa.me/628123456789?text=${encodeURIComponent(text)}`);
+    }
+
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+    window.onclick = (e) => { if(e.target.className === 'modal') closeModal(e.target.id); }
+
+    render(products);
+</script>
+
+</body>
+</html>
